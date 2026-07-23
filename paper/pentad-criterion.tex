@@ -1,0 +1,1027 @@
+\documentclass[11pt]{article}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage[hidelinks]{hyperref}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{conjecture}[theorem]{Conjecture}
+
+\theoremstyle{definition}
+\newtheorem{hypothesis}[theorem]{Hypothesis}
+\newtheorem{definition}[theorem]{Definition}
+
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{example}[theorem]{Example}
+
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\F}{\mathbb{F}}
+\newcommand{\legendre}[2]{\left(\tfrac{#1}{#2}\right)}
+\DeclareMathOperator{\Res}{Res}
+
+\title{A class number criterion for pentads of congruent factorials}
+\author{Jeff Hinojosa\thanks{With machine-assisted proof search and verification.
+All computations reported here, and substantial portions of the proof search and
+adversarial checking, were carried out by AI agents (Claude, Anthropic) under the
+author's direction; this disclosure follows current norms for AI assistance in
+mathematical work. See Remark~\ref{rem:provenance} for details on verification
+status.}}
+\date{July 23, 2026}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Let $q \equiv 1 \pmod 6$, $q \ge 7$, and let $p \equiv 3 \pmod 4$ be a prime
+divisor of $q!-1$; such a divisor always exists, and any prime divisor of
+$q!-1$ exceeds $q$. Building on the tetrad construction of
+Agust\'in-Aquino and Hern\'andez Santiago, we show that the four residues
+$1$, $q$, $p-1-q$, $p-2$ are pairwise distinct with all factorials
+$\equiv 1 \pmod p$, and that the central residue $m = (p-1)/2$ joins them ---
+producing five equal factorials, hence $k = 4$ consecutive intervals with
+product $\equiv 1 \pmod p$ in Erd\H{o}s problem \#1056 --- \emph{if and only
+if} the class number of $\Q(\sqrt{-p})$ satisfies $h(-p) \equiv 3 \pmod 4$.
+The proof is elementary apart from the counting form of Dirichlet's class
+number formula, and it recovers a theorem of Mordell. We deduce a conditional
+infinitude theorem for pentad primes, a multi-seed shape theorem that reduces
+hexad infinitude to the statement that infinitely many pairs
+$q_1 < q_2 \equiv 1 \pmod 6$ satisfy $\gcd(q_1!-1,\,q_2!-1) > 1$, and a
+limitative theorem explaining why the classical identity toolkit terminates,
+unconditionally, exactly at tetrads. Twelve pentads are certified end to end;
+the smallest is $p = 359$ and the most striking is $p = 5039 = 7!-1$, whose
+complete solution set of $n! \equiv 1 \pmod{5039}$ is precisely the
+constructed pentad. The unconditional infinitude question for $k \ge 4$
+remains open.
+\end{abstract}
+
+\section{Introduction}\label{sec:intro}
+
+Erd\H{o}s asked (problem \#1056 in the collection at
+\href{https://www.erdosproblems.com/1056}{erdosproblems.com}; problem A15 in
+Guy \cite{Guy}): for $k \ge 2$, is there a prime $p$ and $k$ consecutive
+blocks of consecutive integers
+\[
+  I_1 = (q_0, q_1], \quad I_2 = (q_1, q_2], \quad \dots, \quad
+  I_k = (q_{k-1}, q_k], \qquad 1 \le q_0 < q_1 < \dots < q_k \le p-1,
+\]
+such that the product of the elements of each block is $\equiv 1 \pmod p$?
+Since $\prod_{n \in (q_{i-1}, q_i]} n = q_i!/q_{i-1}!$, the existence of $k$
+such blocks is equivalent to the existence of $k+1$ values
+$q_0 < q_1 < \dots < q_k$ in $[1, p-1]$ whose factorials are congruent to a
+common residue modulo $p$. We call a set of $j$ such values with equal
+factorials a $j$-\emph{ad}: tetrads ($j=4$) give $k=3$, pentads ($j=5$) give
+$k=4$, hexads ($j=6$) give $k=5$.
+
+Witnesses are known computationally for all $k \le 14$: OEIS sequence
+A060427 \cite{OEIS} records the least prime for each $k$, beginning
+\[
+  11,\ 17,\ 23,\ 71,\ 71,\ 599,\ 599,\ 3011,\ 27901,\ 52163,\ 778699,\
+  2374649,\ 10428007
+\]
+for $k = 2, \dots, 14$ (OEIS \texttt{A060427}; extended by
+J.~K.~Andersen, 2007). Whether witnesses exist for
+\emph{every} $k$, and whether any single $k \ge 2$ admits infinitely many
+primes, are the substantive open questions. In 2026, Agust\'in-Aquino and
+Hern\'andez Santiago \cite{AAHS} proved, with a Lean-verified development,
+that infinitely many primes carry a tetrad: for $q \equiv 1 \pmod 6$,
+$q \ge 7$, and any prime $p \mid q!-1$, the four residues
+$\{1, q, p-1-q, p-2\}$ all have factorial $\equiv 1 \pmod p$ and are pairwise
+distinct. This was the state of the art: $k = 3$ with infinitely many
+witnesses, and nothing beyond.
+
+This note adds one point to their configuration and finds that the question
+of whether it joins is governed by a class number. Our main result is the
+following.
+
+\begin{theorem}[Pentad criterion; proved as Theorem~\ref{thm:main}]
+Let $q \equiv 1 \pmod 6$ with $q \ge 7$, and let $p \equiv 3 \pmod 4$ be a
+prime divisor of $q!-1$. (Such a divisor always exists, since
+$q!-1 \equiv 3 \pmod 4$; and necessarily $p > q$.) Put $m = (p-1)/2$. Then
+the five residues
+\[
+  \{\,1,\ q,\ m,\ p-1-q,\ p-2\,\} \subset [1, p-1]
+\]
+are pairwise distinct, the four outer values satisfy
+$x! \equiv 1 \pmod p$, and $m! \equiv \pm 1 \pmod p$, with
+\[
+  m! \equiv 1 \pmod p
+  \iff
+  h(-p) \equiv 3 \pmod 4,
+\]
+where $h(-p)$ is the class number of $\Q(\sqrt{-p})$. In that case the five
+values form a pentad and $p$ carries $k = 4$ consecutive intervals of product
+$\equiv 1 \pmod p$; otherwise $m! \equiv -1 \pmod p$ and $p$ carries the
+tetrad together with the pair $\{m, p-1\}$ at common value $-1$.
+\end{theorem}
+
+The mechanism is a theorem of Mordell \cite{Mordell}: for $p \equiv 3 \pmod
+4$, $\left(\frac{p-1}{2}\right)! \equiv (-1)^{(h(-p)+1)/2} \pmod p$. We
+re-prove it here in an elementary two-step form --- first
+$m! \equiv (-1)^{N_p} \pmod p$ where $N_p$ counts quadratic nonresidues in
+$(0, p/2)$, then $N_p$ even $\iff h(-p) \equiv 3 \pmod 4$ via the counting
+form of Dirichlet's class number formula --- because both halves are needed
+separately in what follows. The point of the theorem is not the central-sign
+law, which is classical, but the coupling: \emph{Erd\H{o}s \#1056 at $k = 4$
+is tied, along an explicit infinite family of primes, to the residue of
+$h(-p)$ modulo $4$} --- a quantity about which, beyond Gauss's parity result
+($h(-p)$ is odd for prime $p \equiv 3 \bmod 4$), no unconditional
+determination of $h(-p) \bmod 4$ is known
+unconditionally.
+
+The note is organized as follows. Section~\ref{sec:main} states the main
+theorem and fixes notation; Section~\ref{sec:proofs} gives complete proofs.
+Section~\ref{sec:corollaries} derives the conditional infinitude of pentad
+primes, an unconditional dichotomy, the multi-seed shape theorem (every
+$k \ge 3$ is realized by some seed pattern), and the reduction of hexad
+infinitude to a clean divisibility hypothesis with numerical witnesses.
+Section~\ref{sec:limits} proves a limitative theorem: the identity method
+that produces tetrads has a built-in ceiling and cannot self-start beyond
+them, so that pentad or hexad infinitude \emph{via identities} is equivalent
+to the class number statement or to multi-seed divisibilities.
+Section~\ref{sec:numerics} reports the numerical evidence: twelve certified
+pentads, the flagship $p = 5039 = 7!-1$, and sign statistics.
+Remark~\ref{rem:provenance} states plainly what has been machine-verified and
+what has not. We emphasize at the outset: \emph{the tetrad construction is
+entirely due to Agust\'in-Aquino and Hern\'andez Santiago \cite{AAHS}; our
+contribution is the central point, the class number dichotomy, and the
+limitative analysis. The unconditional infinitude of witnesses for any
+$k \ge 4$ remains open.}
+
+\section{The main theorem}\label{sec:main}
+
+\subsection*{Notation}
+Throughout, $p$ denotes an odd prime and $m = (p-1)/2$. For a residue $r$ we
+write $S_r(p) = \{\, n \in [1, p-1] : n! \equiv r \pmod p \,\}$. The Legendre
+symbol is $\legendre{a}{p}$, and
+\[
+  N_p = \#\{\, a : 0 < a < p/2,\ \legendre{a}{p} = -1 \,\}, \qquad
+  A_p = \#\{\, a : 0 < a < p/2,\ \legendre{a}{p} = +1 \,\},
+\]
+so $A_p + N_p = m$. We write $h(-p)$ for the class number of the imaginary
+quadratic field $\Q(\sqrt{-p})$ (equivalently, of the discriminant $-p$ when
+$p \equiv 3 \bmod 4$). A \emph{seed} for $p$ is an integer $q$ with
+$p \mid q! - 1$.
+
+\begin{theorem}[Pentad criterion]\label{thm:main}
+Let $q \equiv 1 \pmod 6$, $q \ge 7$, and let $p \equiv 3 \pmod 4$ be a prime
+with $p \mid q! - 1$. Then:
+\begin{enumerate}
+  \item[(a)] such a prime $p$ exists for every such $q$, and every prime
+    divisor of $q!-1$ satisfies $p > q$ (indeed $p \ge q+4$);
+  \item[(b)] the five integers $1,\ q,\ m,\ p-1-q,\ p-2$ are pairwise
+    distinct elements of $[1, p-1]$;
+  \item[(c)] $1! \equiv q! \equiv (p-1-q)! \equiv (p-2)! \equiv 1 \pmod p$,
+    and $m! \equiv \pm 1 \pmod p$;
+  \item[(d)] $m! \equiv 1 \pmod p \iff N_p$ is even $\iff h(-p) \equiv 3
+    \pmod 4$.
+\end{enumerate}
+Consequently, exactly one of the following holds:
+\begin{enumerate}
+  \item[(i)] $h(-p) \equiv 3 \pmod 4$: then $\{1, q, m, p-1-q, p-2\}$,
+    sorted increasingly, is a pentad at common value $1$, and $p$ carries
+    $k = 4$ consecutive intervals each of product $\equiv 1 \pmod p$;
+  \item[(ii)] $h(-p) \equiv 1 \pmod 4$: then $m! \equiv -1 \pmod p$, and $p$
+    carries the tetrad at $+1$ together with the pair $\{m, p-1\}$ at $-1$.
+\end{enumerate}
+\end{theorem}
+
+Part (a) and the tetrad portion of (b)--(c) constitute the theorem of
+\cite{AAHS}, refined by the observation --- available at zero extra cost ---
+that the prime $p$ may always be chosen in the class $3 \bmod 4$; the
+statement of \cite{AAHS} imposes no congruence condition on $p$. Parts (b)
+and (d) for the central point $m$, and the resulting dichotomy, are new to
+the best of our knowledge (see Remark~\ref{rem:provenance} on the scope of
+the novelty check).
+
+\section{Proofs}\label{sec:proofs}
+
+\subsection{The reflection lemma}
+
+The engine of every construction in this subject is the Wilson pairing
+identity. It is classical; we state it with the consequences we use.
+
+\begin{lemma}[Reflection]\label{lem:reflection}
+Let $p$ be an odd prime and $0 \le n \le p-1$. Then
+\[
+  n! \, (p-1-n)! \equiv (-1)^{n+1} \pmod p.
+\]
+Consequently:
+\begin{enumerate}
+  \item[(i)] if $n$ is odd and $n! \equiv c \pmod p$, then
+    $(p-1-n)! \equiv c^{-1} \pmod p$; in particular the sets $S_1(p)$ and
+    $S_{-1}(p)$ are stable under $n \mapsto p-1-n$ restricted to odd $n$;
+  \item[(ii)] if $n$ is even and $n! \equiv 1$, then $(p-1-n)! \equiv -1$
+    (and vice versa);
+  \item[(iii)] $1, \, p-2 \in S_1(p)$ and $p-1 \in S_{-1}(p)$ for $p \ge 5$;
+  \item[(iv)] $(p-k)! \equiv (-1)^k \, \bigl((k-1)!\bigr)^{-1} \pmod p$ for
+    $1 \le k \le p-1$; hence $(p-k)! \equiv 1$ is equivalent to
+    $p \mid (k-1)! - (-1)^k$.
+\end{enumerate}
+\end{lemma}
+
+\begin{proof}
+Write $(p-1)! = n! \prod_{j=n+1}^{p-1} j$. For $n+1 \le j \le p-1$ put
+$i = p - j$, so $1 \le i \le p-1-n$ and $j \equiv -i \pmod p$; hence
+\[
+  \prod_{j=n+1}^{p-1} j \;\equiv\; (-1)^{p-1-n} (p-1-n)! \;\equiv\;
+  (-1)^{n} (p-1-n)! \pmod p,
+\]
+since $p - 1$ is even. Wilson's theorem $(p-1)! \equiv -1$ gives the
+identity. (i): $n$ odd makes the right side $+1$, so
+$(p-1-n)! \equiv (n!)^{-1} = c^{-1}$; since $c = \pm 1$ are the only
+self-inverse residues in $\F_p$, exactly the classes $S_{\pm 1}$ are
+preserved (the class of $c \ne \pm 1$ is carried to the class of $c^{-1} \ne
+c$). (ii): $n$ even makes the right side $-1$, so $(p-1-n)! \equiv -c^{-1}$.
+(iii): $1! = 1$; from $(p-1)! = (p-1)(p-2)! \equiv -(p-2)! \equiv -1$ we get
+$(p-2)! \equiv 1$; and $(p-1)! \equiv -1$ is Wilson.
+(iv): $(p-1)! = (p-1)(p-2) \cdots (p-(k-1)) \cdot (p-k)! \equiv
+(-1)^{k-1}(k-1)! \, (p-k)! \equiv -1$, so
+$(p-k)! \equiv (-1)^k ((k-1)!)^{-1}$.
+\end{proof}
+
+\subsection{Existence of the seed prime, and its size}
+
+\begin{lemma}[Seed prime]\label{lem:seed}
+For every integer $q \ge 4$, the number $q! - 1$ satisfies
+$q! - 1 \equiv 3 \pmod 4$, and hence has at least one prime factor
+$p \equiv 3 \pmod 4$. Moreover every prime factor of $q!-1$ exceeds $q$.
+\end{lemma}
+
+\begin{proof}
+Since $q \ge 4$, $4 \mid q!$, so $q! - 1 \equiv 3 \pmod 4$. An odd integer
+all of whose prime factors are $\equiv 1 \pmod 4$ is itself $\equiv 1 \pmod
+4$, because the class of $1$ is closed under multiplication in
+$(\Z/4\Z)^{\times}$; hence $q!-1$ has a prime factor $p \equiv 3 \pmod 4$.
+If a prime $p \le q$ divided $q!-1$, it would divide $q!$ and hence their
+difference $1$, which is absurd; so $p > q$.
+\end{proof}
+
+\begin{remark}\label{rem:mod8}
+The lemma cannot be sharpened to a class modulo $8$: indeed
+$q! - 1 \equiv 7 \pmod 8$ for $q \ge 4$, but $3 \cdot 5 \equiv 7 \pmod 8$
+shows that an integer $\equiv 7 \pmod 8$ need not have any prime factor
+$\equiv 7 \pmod 8$. The modulo-$4$ conclusion is exactly what
+Mordell's theorem needs, and exactly what is available.
+\end{remark}
+
+\subsection{Distinctness}
+
+\begin{lemma}[Distinctness]\label{lem:distinct}
+Let $q \equiv 1 \pmod 6$, $q \ge 7$, and let $p > q$ be an odd prime,
+$m = (p-1)/2$. Then the five integers $1, q, m, p-1-q, p-2$ are pairwise
+distinct elements of $[1, p-1]$, and moreover $p \ge q + 4$.
+\end{lemma}
+
+\begin{proof}
+The pairwise coincidences among the four tetrad values reduce to six
+equations:
+\[
+  1 = q; \qquad
+  1 = p-1-q \iff p = q+2; \qquad
+  1 = p-2 \iff p = 3;
+\]
+\[
+  q = p-1-q \iff p = 2q+1; \qquad
+  q = p-2 \iff p = q+2; \qquad
+  p-1-q = p-2 \iff q = 1.
+\]
+Adjoining $m$ adds four more:
+\[
+  m = 1 \iff p = 3; \qquad
+  m = p-2 \iff p = 3; \qquad
+  m = q \iff p = 2q+1; \qquad
+  m = p-1-q \iff p = 2q+1.
+\]
+Now $q \equiv 1 \pmod 6$ forces $q + 2 \equiv 3 \pmod 6$ and
+$2q + 1 \equiv 3 \pmod 6$; both exceed $3$, so both are divisible by $3$ and
+composite --- neither can equal the prime $p$. Also $p > q \ge 7 > 3$
+excludes $p = 3$, and $q = 1$ is excluded by hypothesis. Hence no coincidence
+occurs. Finally, $p$ is odd and $p \notin \{q+1, q+3\}$ (both even) and
+$p \ne q + 2$, so $p \ge q + 4$; in particular $p - 1 - q \ge 3 \ge 1$ and
+all five values lie in $[1, p-1]$.
+\end{proof}
+
+\subsection{The central sign law}
+
+\begin{lemma}[Central sign]\label{lem:centralsign}
+Let $p \equiv 3 \pmod 4$ be prime, $p > 3$, and $m = (p-1)/2$ (which is odd).
+Then
+\[
+  m! \equiv (-1)^{N_p} \pmod p .
+\]
+\end{lemma}
+
+\begin{proof}
+Let $R \subset \F_p^\times$ be the set of quadratic residues, a subgroup of
+odd order $|R| = m$. In a finite abelian group of odd order the product of
+all elements is the identity: elements pair off with their inverses, and no
+element other than the identity is self-inverse. Hence
+$\prod_{r \in R} r \equiv 1 \pmod p$.
+
+Since $p \equiv 3 \pmod 4$ we have $\legendre{-1}{p} = -1$, so the map
+$a \mapsto p - a$ exchanges residues and nonresidues; in particular it maps
+the nonresidues in $(0, p/2)$ bijectively onto the residues in $(p/2, p)$.
+Therefore
+\[
+  R \;=\; \bigl(R \cap (0, p/2)\bigr) \ \sqcup \
+  \bigl\{\, p - a : 0 < a < p/2, \ \legendre{a}{p} = -1 \,\bigr\},
+\]
+and consequently
+\[
+  1 \;\equiv\; \prod_{r \in R} r
+  \;\equiv\;
+  \Bigl(\prod_{\substack{0 < a < p/2 \\ \legendre{a}{p} = 1}} a\Bigr)
+  \prod_{\substack{0 < a < p/2 \\ \legendre{a}{p} = -1}} (p - a)
+  \;\equiv\;
+  (-1)^{N_p} \prod_{0 < a < p/2} a
+  \;=\; (-1)^{N_p} \, m! \pmod p .
+\]
+Since $(-1)^{N_p}$ is its own inverse, $m! \equiv (-1)^{N_p} \pmod p$.
+(Consistently, Lemma~\ref{lem:reflection} at the odd fixed point $n = m$
+gives $(m!)^2 \equiv 1$.)
+\end{proof}
+
+\subsection{The class number bridge}
+
+\begin{lemma}[Class number bridge]\label{lem:bridge}
+Let $p \equiv 3 \pmod 4$ be prime, $p > 3$. Then $h(-p)$ is odd, and
+\[
+  N_p \text{ is even} \iff h(-p) \equiv 3 \pmod 4 .
+\]
+Combined with Lemma~\ref{lem:centralsign} this gives Mordell's theorem
+\emph{\cite{Mordell}}:
+\[
+  m! \;\equiv\; (-1)^{(h(-p)+1)/2} \pmod p ,
+  \qquad\text{i.e.}\qquad
+  m! \equiv +1 \iff h(-p) \equiv 3 \pmod 4 .
+\]
+\end{lemma}
+
+\begin{proof}
+Oddness of $h(-p)$ is Gauss's genus theory: the discriminant $-p$ has a
+single prime discriminant divisor, so there is one genus, and the number of
+classes per genus is odd; equivalently, the $2$-part of the class group is
+trivial.
+
+For the mod-$4$ statement we use the counting form of Dirichlet's class
+number formula for a prime discriminant $-p < -4$ (see Landau
+\cite{Landau} or Borevich--Shafarevich \cite{BS}):
+\[
+  h(-p) \;=\; \frac{A_p - N_p}{\,2 - \legendre{2}{p}\,} .
+\]
+Recall $A_p + N_p = m$. There are two branches.
+
+\emph{Case $p \equiv 7 \pmod 8$.} Then $\legendre{2}{p} = +1$ and
+$h = A_p - N_p = m - 2N_p$. Writing $p = 8s + 7$ gives $m = 4s + 3 \equiv 3
+\pmod 4$, so $h \equiv 3 - 2N_p \pmod 4$: $h \equiv 3 \pmod 4$ iff
+$2N_p \equiv 0 \pmod 4$ iff $N_p$ is even.
+
+\emph{Case $p \equiv 3 \pmod 8$.} Then $\legendre{2}{p} = -1$ and
+$3h = m - 2N_p$. Writing $p = 8s + 3$ gives $m = 4s + 1 \equiv 1 \pmod 4$,
+so $3h \equiv 1 - 2N_p \pmod 4$ and, multiplying by $3^{-1} \equiv 3
+\pmod 4$,
+\[
+  h \;\equiv\; 3(1 - 2N_p) \;\equiv\; 3 + 2N_p \pmod 4 :
+\]
+again $h \equiv 3 \pmod 4$ iff $N_p$ is even.
+
+In both branches $N_p$ even $\iff h(-p) \equiv 3 \pmod 4$. Since $h$ is odd,
+$(-1)^{(h+1)/2} = +1 \iff h \equiv 3 \pmod 4$, which matches
+$m! \equiv (-1)^{N_p}$ from Lemma~\ref{lem:centralsign}.
+\end{proof}
+
+\begin{remark}
+In our numerical verification (Section~\ref{sec:numerics}) the class numbers
+were computed by exact counting of reduced primitive binary quadratic forms
+of discriminant $-p$, independently cross-checked against the Dirichlet
+character sum; the verification of the criterion therefore does not assume
+the analytic formula it uses.
+\end{remark}
+
+\subsection{Proof of Theorem~\ref{thm:main}}
+
+\begin{proof}[Proof of Theorem~\ref{thm:main}]
+(a) is Lemma~\ref{lem:seed} (with $p \ge q+4$ from
+Lemma~\ref{lem:distinct}); (b) is Lemma~\ref{lem:distinct}.
+
+(c): $1! = 1$; $q! \equiv 1$ because $p \mid q! - 1$; $q$ is odd, so
+Lemma~\ref{lem:reflection}(i) gives $(p-1-q)! \equiv 1$; and
+$(p-2)! \equiv 1$ by Lemma~\ref{lem:reflection}(iii). Since
+$p \equiv 3 \pmod 4$, $m$ is odd, and Lemma~\ref{lem:reflection} at $n = m$
+gives $(m!)^2 \equiv (-1)^{m+1} = 1$, so $m! \equiv \pm 1 \pmod p$.
+
+(d) is Lemma~\ref{lem:centralsign} combined with Lemma~\ref{lem:bridge}.
+
+For the dichotomy: in case (i) the five distinct values, sorted as
+$q_0 < q_1 < \dots < q_4$, all lie in $S_1(p)$, so each consecutive interval
+$(q_{i-1}, q_i]$ has product $q_i!/q_{i-1}! \equiv 1 \pmod p$ --- four
+intervals, i.e.\ $k = 4$ in the original formulation. In case (ii),
+$m! \equiv -1$ places $m$ with the Wilson point $p-1$ in $S_{-1}(p)$. The two
+cases are exhaustive and exclusive by (c) and (d).
+\end{proof}
+
+\section{Corollaries: conditional infinitude, shapes, and hexads}
+\label{sec:corollaries}
+
+\subsection{Pentad primes, conditionally}
+
+Let
+\[
+  \mathcal F \;=\; \bigl\{\, (q, p) \ :\ q \equiv 1 \ (\mathrm{mod}\ 6),\
+  q \ge 7,\ p \ \text{prime},\ p \mid q! - 1,\ p \equiv 3 \ (\mathrm{mod}\
+  4) \,\bigr\}.
+\]
+By Lemma~\ref{lem:seed}, $\mathcal F$ projects onto all admissible $q$, and
+$p > q$ throughout.
+
+\begin{hypothesis}[CFS: central factorial sign]\label{hyp:cfs}
+$h(-p) \equiv 3 \pmod 4$ for infinitely many pairs $(q, p) \in \mathcal F$.
+\end{hypothesis}
+
+Full equidistribution --- each residue $1, 3 \bmod 4$ with density $1/2$ ---
+is what randomness models for class numbers predict, and what the data of
+Section~\ref{sec:numerics} show; but only ``infinitely often'' is needed.
+
+\begin{corollary}[Conditional infinitude of pentad primes]\label{cor:cond}
+Assume Hypothesis~\ref{hyp:cfs}. Then infinitely many primes $p$ admit five
+distinct values $x \in [1, p-1]$ with $x! \equiv 1 \pmod p$; that is,
+Erd\H{o}s \#1056 holds for $k = 4$ with infinitely many prime witnesses.
+\end{corollary}
+
+\begin{proof}
+For each pair $(q, p) \in \mathcal F$ with $h(-p) \equiv 3 \pmod 4$,
+Theorem~\ref{thm:main}(i) produces a pentad for $p$. It remains to see the
+primes involved are unbounded. For fixed $q$ the number $q!-1$ has finitely
+many prime factors, so an infinite set of pairs contains pairs with $q$
+arbitrarily large; and $p > q$ forces the corresponding primes to be
+unbounded, hence infinitely many distinct primes occur.
+\end{proof}
+
+\begin{corollary}[Unconditional dichotomy]\label{cor:dichotomy}
+At least one of the following is true:
+\begin{enumerate}
+  \item[(i)] infinitely many primes admit pentads at value $1$ ($k = 4$
+    with infinitely many witnesses); or
+  \item[(ii)] $h(-p) \equiv 1 \pmod 4$ for all but finitely many pairs
+    $(q, p) \in \mathcal F$ --- an eventually-constant law for the residue
+    of an odd class number along an explicit unbounded family of primes,
+    contrary to every randomness model for $h(-p)$.
+\end{enumerate}
+\end{corollary}
+
+\begin{proof}
+If case (i) of Theorem~\ref{thm:main} occurs for infinitely many members of
+$\mathcal F$, the argument of Corollary~\ref{cor:cond} gives conclusion (i);
+if it occurs for only finitely many, conclusion (ii) holds by definition.
+\end{proof}
+
+\subsection{The multi-seed shape theorem}
+
+The pentad construction generalizes: each additional seed buys more points,
+with all degeneracies killed automatically by the mod-$6$ arithmetic.
+
+\begin{theorem}[Shape theorem]\label{thm:shape}
+Let $j \ge 1$ and $e \ge 0$. Choose distinct integers
+$q_1 < \dots < q_j$, each $\equiv 1 \pmod 6$ and $\ge 7$ (hence odd), and
+distinct even integers $t_1, \dots, t_e \ge 4$ (no congruence condition
+needed). Suppose a prime $p$ divides $q_i! - 1$ for every
+$i \in \{1, \dots, j\}$ and $t_\ell! - 1$ for every
+$\ell \in \{1, \dots, e\}$. Then $p$ exceeds every seed, and the $2j + e + 2$
+integers
+\[
+  \{1,\ p-2\} \ \cup\ \{q_1, \dots, q_j\} \ \cup\ \{t_1, \dots, t_e\}
+  \ \cup\ \{p-1-q_1, \dots, p-1-q_j\}
+\]
+are pairwise distinct elements of $[1, p-1]$ with all factorials
+$\equiv 1 \pmod p$. Sorted increasingly, they yield $k = 2j + e + 1$
+consecutive intervals each of product $\equiv 1 \pmod p$.
+
+\emph{Value-$(-1)$ variant:} if instead $p \mid q_i! + 1$ and
+$p \mid t_i! + 1$, then $\{p-1\} \cup \{q_i\} \cup \{t_i\} \cup
+\{p-1-q_i\}$ are $2j + e + 1$ distinct points with all factorials
+$\equiv -1$, yielding $k = 2j + e$ intervals.
+
+In particular $(j, e) = (1, 0)$ recovers the tetrad theorem of \cite{AAHS}
+($k = 3$); $(1, 1)$ gives pentads ($k = 4$); $(2, 0)$ gives hexads
+($k = 5$); and every $k \ge 3$ (indeed every $k \ge 2$, using the $-1$
+variant) is realized by some $(j, e)$.
+\end{theorem}
+
+\begin{proof}
+\emph{Size of $p$:} if $p \le q$ for some seed $q$, then $p \mid q!$ and
+$p \mid q! \mp 1$ force $p \mid 1$, absurd; so $p$ exceeds every seed, and
+since $p$ is odd, $p \ge (\text{largest odd seed}) + 2$, so all listed points
+lie in $[1, p-1]$.
+
+\emph{Factorial values} ($+1$ case): $1! = 1$; $q_i! \equiv 1$ and
+$t_i! \equiv 1$ by hypothesis; $(p-2)! \equiv 1$ by
+Lemma~\ref{lem:reflection}(iii); $(p-1-q_i)! \equiv 1$ by
+Lemma~\ref{lem:reflection}(i), since $q_i$ is odd.
+
+\emph{Distinctness} --- the complete case list:
+\begin{enumerate}
+  \item[{[a]}] $1 = q_i$ or $1 = t_i$: impossible, all seeds are $\ge 4$.
+  \item[{[b]}] $1 = p-2 \iff p = 3$: impossible, $p$ exceeds the seeds.
+  \item[{[c]}] $1 = p-1-q_i \iff p = q_i + 2$: but $q_i \equiv 1 \pmod 6$
+    makes $q_i + 2 \equiv 3 \pmod 6$, so $3 \mid p$, forcing $p = 3$:
+    impossible.
+  \item[{[d]}] $q_i = q_{i'}$ or $t_i = t_{i'}$ ($i \ne i'$): excluded by
+    choice.
+  \item[{[e]}] $q_i = t_{i'}$: opposite parities.
+  \item[{[f]}] $q_i = p-2 \iff p = q_i + 2$: as [c].
+  \item[{[g]}] $t_i = p-2 \iff p = t_i + 2$, which is even: impossible for
+    odd $p$.
+  \item[{[h]}] $q_i = p-1-q_{i'} \iff p = q_i + q_{i'} + 1$: for $i = i'$
+    this is $p = 2q_i + 1 \equiv 3 \pmod 6$; for $i \ne i'$ it is
+    $\equiv 1 + 1 + 1 \equiv 3 \pmod 6$; either way $3 \mid p$: impossible.
+  \item[{[i]}] $t_i = p-1-q_{i'} \iff p = q_{i'} + t_i + 1 =
+    \text{odd} + \text{even} + 1$, which is even: impossible.
+  \item[{[j]}] $p-1-q_i = p-1-q_{i'} \iff q_i = q_{i'}$.
+  \item[{[k]}] $p-1-q_i = p-2 \iff q_i = 1$: impossible.
+\end{enumerate}
+So all $2j+e+2$ points are distinct, and consecutive interval products are
+ratios of equal factorials, hence $\equiv 1$.
+
+\emph{$(-1)$ variant:} values: $(p-1)! \equiv -1$ (Wilson);
+$q_i! \equiv t_i! \equiv -1$ by hypothesis; $(p-1-q_i)! \equiv (-1)^{-1} =
+-1$ by Lemma~\ref{lem:reflection}(i). Distinctness: cases [d], [e],
+[h]--[j] as above;
+$q_i = p-1$ or $t_i = p-1$ would make $p = \text{seed} + 1$ even:
+impossible; $p-1-q_i = p-1 \iff q_i = 0$. All cases close, giving
+$2j+e+1$ distinct points and $k = 2j+e$ intervals.
+
+Realization of every $k$: $k = 2j+e+1$ with $j \ge 1$, $e \in \{0, 1\}$
+covers all $k \ge 3$; the $-1$ variant covers $k \ge 2$. A witness for $k$
+also witnesses every $k' < k$ (take a subset of the points).
+\end{proof}
+
+Note that Theorem~\ref{thm:shape} makes no claim that primes satisfying
+several simultaneous seed divisibilities \emph{exist} --- that is precisely
+the hard part; see Section~\ref{sec:limits}. What it shows is that
+\emph{whenever} they exist, the resulting configuration is automatically
+nondegenerate.
+
+\subsection{Hexad infinitude reduced to a divisibility statement}
+
+\begin{corollary}[Hexad reduction]\label{cor:hexad}
+If there are infinitely many pairs $q_1 < q_2$ with
+$q_1 \equiv q_2 \equiv 1 \pmod 6$, $q_1 \ge 7$, and
+$\gcd(q_1! - 1,\ q_2! - 1) > 1$, then infinitely many primes admit hexads at
+value $1$, i.e.\ Erd\H{o}s \#1056 holds for $k = 5$ (hence also $k = 3, 4$)
+with infinitely many prime witnesses.
+
+No size or congruence condition on the shared prime is needed: every prime
+factor of $\gcd(q_1!-1, q_2!-1)$ automatically exceeds $q_2$ and
+automatically avoids all degenerate collisions.
+\end{corollary}
+
+\begin{proof}
+Let $(q_1, q_2)$ be such a pair and $p$ any prime factor of the gcd. By
+Theorem~\ref{thm:shape} with $(j, e) = (2, 0)$, $p > q_2$ and $p$ carries the
+hexad $\{1, q_1, q_2, p-1-q_2, p-1-q_1, p-2\}$. Given infinitely many pairs:
+for fixed $q_2$ there are fewer than $q_2$ pairs, so $q_2$ takes arbitrarily
+large values along the family; each pair's prime satisfies $p > q_2$, so the
+set of primes produced is unbounded, hence infinite, and each carries
+$k = 5$.
+\end{proof}
+
+The hypothesis is non-vacuous: nontrivial factorial gcd pairs within the
+theorem-exact family exist in abundance. Verified witnesses
+$(q_1, q_2;\, p)$ with $q_1 \equiv q_2 \equiv 1 \pmod 6$ and
+$p \mid \gcd(q_1!-1, q_2!-1)$ include
+\[
+  (49,\ 97;\ 823), \quad
+  (13,\ 361;\ 1733), \quad
+  (415,\ 841;\ 2287), \quad
+  (193,\ 265;\ 2113),
+\]
+\[
+  (361,\ 505;\ 971), \quad
+  (445,\ 1045;\ 5477);
+\]
+on the $-1$ side, $p = 71$ divides $q! + 1$ simultaneously for the seeds
+$q = 7, 19, 61$ (all $\equiv 1 \bmod 6$; indeed $7! + 1 = 71^2$), whose
+$-1$-variant configuration realizes $S_{-1}(71) = \{7, 9, 19, 51, 61, 63,
+70\}$, a heptad at $-1$. Note also that $p = 971$ appears both as a pentad
+prime (seed $361$, Table~\ref{tab:pentads}) and as a hexad prime (seeds
+$361, 505$): the mechanisms stack. A heuristic count (independent-values
+model, corrected for the Wilson seed $q = p-2$ and reflection doubling)
+predicts that the number of such pairs with $q_2 \le Q$ grows like
+$Q/\log Q$ up to constants, and measured counts up to $Q = 1500$ grow
+near-linearly as predicted; but no proof technique for the infinitude of
+such pairs is currently visible.
+
+\section{Limits of the identity method}\label{sec:limits}
+
+The results above raise an obvious question: the tetrad theorem is
+unconditional --- why should the pentad cost a class number condition, and
+the hexad a simultaneous-divisibility hypothesis? This section proves that
+the barrier is structural, not an artifact of our construction. The
+``identity method'' below means: producing members of $S_1(p)$ for
+infinitely many $p$ using the universal identities of
+Lemma~\ref{lem:reflection} together with primes constructed as divisors of
+integer sequences (Euclid-style seeds $p \mid q! \mp 1$).
+
+\subsection{Template rigidity}
+
+\begin{proposition}[Template rigidity]\label{prop:rigidity}
+Call $\nu$ a \emph{template position} if $\nu(p) = a$ (fixed $a \ge 0$), or
+$\nu(p) = p - j$ (fixed $j \ge 1$), or $\nu(p) = m \pm t$ (fixed $t \ge 0$).
+Then $\nu(p)! \equiv 1 \pmod p$ holds for infinitely many primes $p$
+\emph{only} in the cases
+\[
+  a \in \{0, 1\}, \qquad j = 2, \qquad
+  (t = 0 \ \text{with} \ p \equiv 3 \bmod 4 \ \text{and} \
+  h(-p) \equiv 3 \bmod 4).
+\]
+In every other case the set of admissible $p$ is finite and explicitly
+contained in the divisors of a fixed nonzero integer:
+\[
+  a \ge 2:\ p \mid a! - 1; \qquad
+  j \notin \{1, 2\},\ p > j:\ p \mid (j-1)! - (-1)^j;
+\]
+\[
+  t \ge 1,\ p \equiv 3 \ (\mathrm{mod}\ 4):\ p \mid \bigl((2t-1)!!\bigr)^2 -
+  4^t; \qquad
+  t \ge 1,\ p \equiv 1 \ (\mathrm{mod}\ 4):\ p \mid \bigl((2t-1)!!\bigr)^2 +
+  4^t.
+\]
+\end{proposition}
+
+\begin{proof}[Proof sketch]
+Fixed low positions $a \ge 2$ are immediate. Top positions: by
+Lemma~\ref{lem:reflection}(iv), $(p-j)! \equiv 1 \iff p \mid (j-1)! -
+(-1)^j$, a nonzero integer for $j \notin \{1, 2\}$ since $(j-1)! \ge 2$
+($j = 1$ gives $p \mid 2$; $j = 2$ gives $0$, i.e.\ all $p$). Near-center
+positions: the telescoped central formulas
+\[
+  (m+t)! \equiv m! \cdot \frac{(2t-1)!!}{2^t}, \qquad
+  (m-t)! \equiv m! \cdot \frac{(-2)^t}{(2t-1)!!} \pmod p
+\]
+(both consequences of $j \equiv -(p - j)$ pairing around the center) combine
+with $(m!)^2 \equiv (-1)^{m+1}$: for $p \equiv 3 \pmod 4$,
+$m! = \sigma \in \{\pm 1\}$ and $(m \pm t)! \equiv 1$ forces
+$p \mid (2t-1)!! \mp \sigma(\pm 2)^t$, hence in either case
+$p \mid ((2t-1)!!)^2 - 4^t$, nonzero (odd square minus even power) for
+$t \ge 1$; for $p \equiv 1 \pmod 4$, $(m!)^2 \equiv -1$ and squaring gives
+$p \mid ((2t-1)!!)^2 + 4^t$. The center itself ($t = 0$): for
+$p \equiv 1 \pmod 4$, $(m!)^2 \equiv -1$, so $m!$ has order $4$ and is never
+$\pm 1$; for $p \equiv 3 \pmod 4$ the sign is $h(-p) \bmod 4$
+(Lemmas~\ref{lem:centralsign}--\ref{lem:bridge}), which admits no known
+congruence description: empirically both signs occur with frequency
+$\tfrac12 \pm 0.03$ in every residue class modulo $8$, $16$, and $24$ for
+$p \le 60000$.
+\end{proof}
+
+\subsection{Bounded patterns are finite}
+
+A \emph{pattern} is a composition $(L_1, \dots, L_t)$ of a total length
+$C = L_1 + \dots + L_t$, describing $t$ adjacent intervals of consecutive
+integers of lengths $L_i$, placed at a variable base: with cut points
+$c_0 = 0 < c_1 < \dots < c_t = C$ and base $m$, the chain condition
+$(m + c_0)! \equiv (m + c_1)! \equiv \dots \equiv (m + c_t)! \pmod p$
+(for $p > m + C$) is equivalent to the polynomial system
+\[
+  g_i(m) \equiv 0 \pmod p, \qquad
+  g_i(x) = \prod_{j = c_{i-1}+1}^{c_i} (x + j) \; - \; 1, \qquad
+  i = 1, \dots, t .
+\]
+
+\begin{theorem}[Bounded-pattern finiteness; computational]\label{thm:patterns}
+For every one of the $65{,}519$ patterns with $C \le 16$ and $t \ge 2$, and
+every one of the $1{,}966{,}080$ resulting polynomial pairs $(g_i, g_j)$,
+$\gcd(g_i, g_j) = 1$ in $\Q[x]$. Consequently, for every such pattern the
+primes admitting a chain with all cut points inside a window of length
+$\le 16$ divide the (nonzero) pairwise resultants $\Res(g_i, g_j)$ --- a
+finite, explicit set per pattern. There is no bounded-pattern route to
+infinitude for any $k \ge 2$, and no ``algebraic jackpot'' pattern exists at
+small size.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+The equivalence chain-condition $\leftrightarrow$ polynomial system follows
+from $(m + c_i)! = (m + c_{i-1})! \prod_{j = c_{i-1}+1}^{c_i} (m + j)$ and
+$p \nmid (m + c_{i-1})!$. For the coprimality certificate: reducing modulo a
+prime $\ell$ can only increase the degree of a gcd (Sylvester/subresultant
+argument), so exhibiting $\deg \gcd_{\F_\ell}(g_i, g_j) = 0$ for a single
+$\ell$ proves coprimality over $\Q$; the computation used
+$\ell = 2^{61} - 1$ for every pair. If $\gcd(g_i, g_j) = 1$ then
+$\Res(g_i, g_j) \ne 0$, and any prime modulo which $g_i, g_j$ share a root
+divides it.
+\end{proof}
+
+The historically known sporadic witnesses are precisely such resultant
+primes: for the pattern $(2, 3)$, $\Res(g_1, g_2) = 11$ exactly ---
+Erd\H{o}s's example $3 \cdot 4 \equiv 5 \cdot 6 \cdot 7 \equiv 1 \pmod{11}$
+lives at the root $m \equiv 2 \pmod{11}$ --- and $17$ divides all three
+pairwise resultants of Makowski's pattern $(4, 6, 4)$, root
+$m \equiv 1 \pmod{17}$. In this light, A060427 is a record sequence drawn
+from prime factors of resultant systems of provably coprime polynomial
+families, plus unstructured coincidences: sporadic by nature. For $C > 16$
+pairwise coprimality remains conjectural; it is a close cousin of the
+conjecture of Klurman and Munsch \cite{KM} (Conjecture 3.3 in the published
+version; Conjecture 4.2 in arXiv:1505.01198) that the
+splitting fields of $t(t+1)\cdots(t+n-1) - 1$ for distinct $n$ intersect
+only in $\Q$ --- that is, the experts' conjecture is that this obstruction is
+\emph{permanent}.
+
+\subsection{Cheap second divisibilities do not exist}
+
+\begin{lemma}\label{lem:gcds}
+For all integers $q, n \ge 2$:
+\[
+  \gcd(q!-1,\ (q+1)!-1) = 1; \qquad
+  \gcd(q!-1,\ q!+1) = 1; \qquad
+  \gcd(n!+1,\ (n+1)!+1) = 1;
+\]
+and $\gcd(q!-1, (q+1)!+1)$ divides $q+2$, hence equals $1$ for
+$q \equiv 1 \pmod 6$, $q \ge 7$.
+\end{lemma}
+
+\begin{proof}
+If $d \mid q!-1$ and $d \mid (q+1)!-1$ then
+$d \mid (q+1)(q!-1) - ((q+1)!-1) = -q$, so $d \mid q$; but $d \mid q!-1$
+forces $\gcd(d, q!) = 1$, so $d = 1$. The second gcd divides $2$ and both entries
+are odd. The third: $d \mid (n+1)(n!+1) - ((n+1)!+1) = n$, and
+$\gcd(d, n!) = 1$ again. The fourth:
+$d \mid (q+1)!+1 - (q+1)(q!-1) = q+2$; for $q \equiv 1 \pmod 6$ every prime
+factor of $q+2 = 3 \cdot \frac{q+2}{3}$ is $\le \frac{q+2}{3} < q$ or equals
+$3$, while every prime factor of $q!-1$ exceeds $q$; so $d = 1$.
+\end{proof}
+
+\subsection{The bootstrap ceiling}
+
+\begin{proposition}[Bootstrap]\label{prop:bootstrap}
+Fix $t \ge 1$ and odd seeds $q_1 < \dots < q_t$. The $t$ simultaneous
+conditions $q_i! \equiv 1 \pmod p$ are equivalent to
+\[
+  p \mid q_1! - 1
+  \quad\text{together with}\quad
+  p \ \Bigm|\ \prod_{q_{i-1} < j \le q_i} j \; - \; 1, \qquad
+  i = 2, \dots, t
+\]
+--- that is, to a witness of the \emph{anchored $t$-interval instance of
+Erd\H{o}s \#1056 itself}. Hence the identity method converts infinitude for
+the $t$-seed configuration ($k = 2t + 1$ intervals by
+Theorem~\ref{thm:shape}) into infinitude for a $t$-interval instance of the
+same problem, and cannot self-start beyond $t = 1$: the case $t = 1$ is
+exactly the single-sequence Euclid construction (the tetrad theorem of
+\cite{AAHS}, $k = 3$), while every $t \ge 2$ presupposes an instance of the
+problem being solved.
+\end{proposition}
+
+\begin{proof}
+$p \mid q_1! - 1$ implies $p \nmid q_i!$ for all $i$, so
+$q_i! \equiv 1 \iff$ the interval product over $(q_{i-1}, q_i]$ is
+$\equiv 1$; conversely those interval conditions are precisely ``$t-1$
+further consecutive intervals of product $\equiv 1$, anchored at
+$q_1 \in S_1(p)$''.
+\end{proof}
+
+\subsection{The exhaustion theorem and the equivalence}
+
+\begin{theorem}[Exhaustion]\label{thm:exhaustion}
+Fix $W \ge 3$ and let $C(W)$ be the maximum of the finite set
+\[
+  \{n! - 1 : 2 \le n \le W\} \cup \{|(j-1)! - (-1)^j| : 3 \le j \le W\}
+  \cup \{\,\bigl|((2t-1)!!)^2 \mp 4^t\bigr| : 1 \le t \le W\,\}.
+\]
+Then for every prime $p > C(W)$, with $m = (p-1)/2$:
+\[
+  S_1(p) \,\cap\, \Bigl([1, W] \cup [p-W,\, p-1] \cup [m-W,\, m+W]\Bigr)
+  \;=\;
+  \{1,\ p-2\} \ \cup\
+  \begin{cases}
+    \{m\} & \text{if } p \equiv 3 \ (\mathrm{mod}\ 4) \text{ and }
+             h(-p) \equiv 3 \ (\mathrm{mod}\ 4), \\
+    \emptyset & \text{otherwise.}
+  \end{cases}
+\]
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+Each window is handled by Proposition~\ref{prop:rigidity}: a member of
+$S_1(p)$ at position $n \in [2, W]$, $n = p-j$ with $3 \le j \le W$, or
+$n = m \pm t$ with $1 \le t \le W$ forces $p$ to divide a nonzero integer
+bounded by $C(W) < p$, which is impossible; the surviving positions are
+exactly $1$, $p-2$, and the conditional center.
+\end{proof}
+
+Assembling Proposition~\ref{prop:rigidity},
+Theorem~\ref{thm:patterns}, Lemma~\ref{lem:gcds},
+Proposition~\ref{prop:bootstrap}, and Theorem~\ref{thm:exhaustion}:
+
+\begin{theorem}[Limitative theorem]\label{thm:limitative}
+Within the identity framework --- members of $S_1(p)$ produced by the
+universal identities of Lemma~\ref{lem:reflection} at template positions,
+with primes obtained as divisors of constructed integers --- the following
+hold.
+\begin{enumerate}
+  \item[(i)] One divisibility $p \mid q!-1$ ($q$ odd) yields exactly the
+    orbit $\{q, p-1-q\}$ of the Wilson involution, on top of the universal
+    pair $\{1, p-2\}$: four elements, the tetrad, $k = 3$. This is the
+    unconditional ceiling of the method.
+  \item[(ii)] The fifth element requires the center, i.e.\ the open
+    statement $h(-p) \equiv 3 \pmod 4$ infinitely often along
+    $\mathcal F$ (Hypothesis~\ref{hyp:cfs}); there is no congruence
+    handle on this sign.
+  \item[(iii)] The sixth element requires a second independent divisibility
+    $p \mid \gcd(q_1!-1, q_2!-1)$; cheap adjacent variants are provably
+    trivial (Lemma~\ref{lem:gcds}), bounded patterns admit only finitely
+    many primes each (Theorem~\ref{thm:patterns}), and unbounded second
+    seeds re-pose the problem itself (Proposition~\ref{prop:bootstrap}).
+\end{enumerate}
+Hence pentad or hexad infinitude via identities is \emph{equivalent} to the
+class number statement (Hypothesis~\ref{hyp:cfs}) or to the multi-seed
+divisibility statement (hypothesis of Corollary~\ref{cor:hexad}),
+respectively. This explains precisely why the June 2026 state of the art
+($k = 3$) is the natural ceiling of the entire classical toolkit.
+\end{theorem}
+
+We regard Theorem~\ref{thm:limitative} as the real content of this note
+alongside Theorem~\ref{thm:main}: not a proof that $k \ge 4$ infinitude is
+false --- we believe the opposite --- but an identification of the exact
+open statements any identity-based proof must pass through.
+
+\section{Numerical evidence}\label{sec:numerics}
+
+\subsection{Certified pentads}
+
+Table~\ref{tab:pentads} lists twelve pentads certified end to end: the seed
+divisibility $p \mid q!-1$, the primality of $p$, the congruences
+$p \equiv 3 \pmod 4$ and $q \equiv 1 \pmod 6$, the five factorial values,
+distinctness, and the class number $h(-p) \equiv 3 \pmod 4$ were each
+verified by direct computation, with $h(-p)$ computed two independent ways
+(exact count of reduced primitive binary quadratic forms of discriminant
+$-p$, and the Dirichlet character sum), in agreement in every case. Note
+that composite seeds are allowed and occur ($q = 25 = 5^2$, $q = 115$,
+$q = 235$, $q = 295$, $q = 301$, $q = 361 = 19^2$).
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{rrrrrr}
+\hline
+$p$ & $q$ & $m = \frac{p-1}{2}$ & $p-1-q$ & $h(-p)$ & \\
+\hline
+$359$   & $229$ & $179$   & $129$   & $19$  & \\
+$439$   & $37$  & $219$   & $401$   & $15$  & \\
+$883$   & $43$  & $441$   & $839$   & $3$   & \\
+$907$   & $25$  & $453$   & $881$   & $3$   & \\
+$971$   & $361$ & $485$   & $609$   & $15$  & \\
+$5003$  & $295$ & $2501$  & $4707$  & $15$  & \\
+$5039$  & $7$   & $2519$  & $5031$  & $83$  & (flagship: $5039 = 7!-1$) \\
+$9439$  & $235$ & $4719$  & $9203$  & $75$  & \\
+$9643$  & $337$ & $4821$  & $9305$  & $11$  & \\
+$9791$  & $301$ & $4895$  & $9489$  & $119$ & \\
+$21839$ & $115$ & $10919$ & $21723$ & $195$ & \\
+$22639$ & $223$ & $11319$ & $22415$ & $55$  & \\
+\hline
+\end{tabular}
+\caption{Twelve certified pentads. In each row the pentad is
+$\{1, q, m, p-1-q, p-2\}$, all five factorials $\equiv 1 \pmod p$, and
+$h(-p) \equiv 3 \pmod 4$ as the criterion requires.}
+\label{tab:pentads}
+\end{table}
+
+\subsection{The flagship}
+
+The prime $p = 5039 = 7! - 1$ is itself of the form $q! - 1$ with the seed
+$q = 7 \equiv 1 \pmod 6$, and $5039 \equiv 3 \pmod 4$ with
+$h(-5039) = 83 \equiv 3 \pmod 4$. An exhaustive scan of $n = 1, \dots,
+5038$ shows that the complete solution set of $n! \equiv 1 \pmod{5039}$ is
+\emph{exactly} the constructed pentad
+\[
+  \{\, 1,\ 7,\ 2519,\ 5031,\ 5037 \,\},
+\]
+and $n! \equiv -1 \pmod{5039}$ only at the Wilson point $n = 5038$. Thus for
+this prime the theorem does not merely produce five solutions; it accounts
+for every solution.
+
+\subsection{Tightness in the negative direction}
+
+The criterion bites both ways. For $q = 31$, the divisor $p = 787$ of
+$31! - 1$ has $h(-787) \equiv 1 \pmod 4$; for $q = 13$, the only prime
+factor $\equiv 3 \pmod 4$ of $13! - 1$ is $p = 3593203$, with
+$h(-p) \equiv 1 \pmod 4$. In both cases $m! \equiv -1 \pmod p$ was verified
+directly, and the scan confirmed that no pentad through $m$ exists: case
+(ii) of Theorem~\ref{thm:main}, exactly as predicted.
+
+\subsection{Sign statistics}
+
+Across all $1632$ primes $p \equiv 3 \pmod 4$ in $[7, 30000]$, the central
+sign $m! \equiv \pm 1 \pmod p$ splits $826$ at $+1$ to $806$ at $-1$
+--- consistent with the expected equidistribution of $h(-p) \bmod 4$
+between $1$ and $3$. The split remains balanced (within $\pm 0.03$ of
+$\tfrac12$) when refined by residue classes modulo $8$, $16$, and $24$ for
+$p \le 60000$; no congruence bias is visible, which is why
+Hypothesis~\ref{hyp:cfs} appears both true and inaccessible to congruence
+methods.
+
+\subsection{Independent verification}
+
+The elementary components were stress-tested independently of the proofs:
+the reflection identity of Lemma~\ref{lem:reflection} was verified
+exhaustively for all $n \in [0, p-1]$ for every prime $p < 500$ and for
+$p = 10007$ and $p = 99991$; the Mordell law
+(Lemmas~\ref{lem:centralsign}--\ref{lem:bridge}) was verified for all
+$1135$ primes $p \equiv 3 \pmod 4$ in $[7, 20000)$, with class numbers
+computed by reduced-form counting --- millions of individual assertions in
+total, with zero failures.
+
+\begin{remark}[Provenance, verification status, and honesty]
+\label{rem:provenance}
+This note reports work carried out in an AI-assisted setting: the proof
+search was conducted by multiple independent prover agents, the results were
+attacked by adversarial refuter agents, and all computations described above
+were machine-executed and machine-checked. The reader should weigh the
+following plainly stated caveats. (1) The elementary core
+(Lemmas~\ref{lem:reflection}--\ref{lem:bridge} and
+Theorem~\ref{thm:main}) is short enough to verify by hand, and a Lean
+formalization of this core is in progress but not complete at the time of
+writing. (2) The novelty assessment --- that the coupling of Erd\H{o}s
+\#1056 to $h(-p) \bmod 4$ does not appear in the tetrads development
+\cite{AAHS}, in the discussion at erdosproblems.com/1056 \cite{EP}, or in
+Hardy--Subbarao \cite{HS} --- rests on machine literature searches and a
+dedicated follow-up check, not on a systematic human review; the coupling
+is natural and prior art may exist. (3) The Wilson pairing toolkit itself is
+classical and no novelty is claimed for it, nor for Mordell's theorem, of
+which Lemmas~\ref{lem:centralsign} and \ref{lem:bridge} are a re-proof.
+(4) The tetrad construction and the family $q \equiv 1 \pmod 6$,
+$p \mid q!-1$ are entirely due to Agust\'in-Aquino and Hern\'andez
+Santiago \cite{AAHS}; our theorem adds the central point and the class
+number dichotomy. (5) Above all: \emph{no unconditional infinitude for any
+$k \ge 4$ is claimed}. Corollary~\ref{cor:cond} is conditional on
+Hypothesis~\ref{hyp:cfs}, Corollary~\ref{cor:hexad} on a divisibility
+hypothesis, and Theorem~\ref{thm:limitative} explains why some such
+hypothesis is currently unavoidable. The Erd\H{o}s problem remains open.
+\end{remark}
+
+\section*{Acknowledgments}
+The tetrad theorem and its Lean development by O.~A.~Agust\'in-Aquino and
+J.~Hern\'andez Santiago \cite{AAHS} are the foundation on which this note
+builds. Thanks are due to the maintainers of erdosproblems.com and the OEIS,
+whose curation makes attacks like this one possible.
+
+\begin{thebibliography}{9}
+
+\bibitem{AAHS}
+O.~A.~Agust\'in-Aquino and J.~Hern\'andez Santiago,
+\emph{Infinite tetrads of congruent factorials} (Lean-verified development
+proving the infinitude of tetrad primes),
+2026. Repository: \url{https://github.com/octavioalberto/tetrads}.
+
+\bibitem{BS}
+Z.~I.~Borevich and I.~R.~Shafarevich,
+\emph{Number Theory},
+Academic Press, New York, 1966. (Counting form of Dirichlet's class number
+formula for imaginary quadratic fields.)
+
+\bibitem{EP}
+T.~F.~Bloom (maintainer),
+\emph{Erd\H{o}s problem \#1056},
+\url{https://www.erdosproblems.com/1056}.
+
+\bibitem{Guy}
+R.~K.~Guy,
+\emph{Unsolved Problems in Number Theory},
+3rd ed., Problem A15, Springer-Verlag, New York, 2004.
+
+\bibitem{HS}
+G.~E.~Hardy and M.~V.~Subbarao,
+\emph{A modified problem of Pillai and some related questions},
+Amer. Math. Monthly \textbf{109} (2002), 554--559.
+
+\bibitem{KM}
+O.~Klurman and M.~Munsch,
+\emph{Distribution of factorials modulo $p$},
+J. Th\'eor. Nombres Bordeaux \textbf{29} (2017), 169--177.
+arXiv:1505.01198.
+
+\bibitem{Landau}
+E.~Landau,
+\emph{Vorlesungen \"uber Zahlentheorie},
+Hirzel, Leipzig, 1927. (Classical counting form of the class number
+formula.)
+
+\bibitem{Mordell}
+L.~J.~Mordell,
+\emph{The congruence $((p-1)/2)! \equiv \pm 1 \pmod p$},
+Amer. Math. Monthly \textbf{68} (1961), 145--146.
+
+\bibitem{OEIS}
+OEIS Foundation Inc.,
+\emph{Sequence A060427: smallest prime $p$ such that there are $n$ strings
+of consecutive integers all having products $\equiv 1 \bmod p$},
+The On-Line Encyclopedia of Integer Sequences,
+\url{https://oeis.org/A060427}.
+
+\end{thebibliography}
+
+\end{document}
