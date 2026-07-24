@@ -155,8 +155,12 @@ $k \ge 3$ is realized by some seed pattern), and the reduction of hexad
 infinitude to a clean divisibility hypothesis with numerical witnesses.
 Section~\ref{sec:limits} proves a limitative theorem: the identity method
 that produces tetrads has a built-in ceiling and cannot self-start beyond
-them, so that pentad or hexad infinitude \emph{via identities} is equivalent
-to the class number statement or to multi-seed divisibilities.
+them, so that pentad or hexad infinitude \emph{via identities at the pinned
+value $1$} is equivalent to the class number statement or to multi-seed
+divisibilities. The ceiling is a feature of the pinned value: \#1056 permits
+a free common residue, and Remark~\ref{rem:freevalue} exhibits $k = 5$
+configurations off both $S_1(p)$ and $S_{-1}(p)$, where the analysis does
+not reach.
 Section~\ref{sec:numerics} reports the numerical evidence: twelve certified
 pentads, the flagship $p = 5039 = 7!-1$, and sign statistics.
 Remark~\ref{rem:provenance} states plainly what has been machine-verified and
@@ -623,12 +627,65 @@ $q = 7, 19, 61$ (all $\equiv 1 \bmod 6$; indeed $7! + 1 = 71^2$), whose
 $-1$-variant configuration realizes $S_{-1}(71) = \{7, 9, 19, 51, 61, 63,
 70\}$, a heptad at $-1$. Note also that $p = 971$ appears both as a pentad
 prime (seed $361$, Table~\ref{tab:pentads}) and as a hexad prime (seeds
-$361, 505$): the mechanisms stack. A heuristic count (independent-values
+$361, 505$): the mechanisms stack. Three simultaneous seeds also occur:
+$p = 4093$ divides $q! - 1$ for $q = 871, 3517, 3535$ (all
+$\equiv 1 \bmod 6$) and also for the even seed $t = 2312$, a
+$(j, e) = (3, 1)$ instance of Theorem~\ref{thm:shape}. It realizes
+\[
+  S_1(4093) = \{1,\ 557,\ 575,\ 871,\ 2312,\ 3221,\ 3517,\ 3535,\ 4091\},
+\]
+exactly the predicted $2j + e + 2 = 9$ points --- the three seeds, their
+three mirrors $p-1-q_i$, the even seed, and the universal pair
+$\{1, p-2\}$ --- giving $k = 8$ consecutive intervals at a single prime. A heuristic count (independent-values
 model, corrected for the Wilson seed $q = p-2$ and reflection doubling)
 predicts that the number of such pairs with $q_2 \le Q$ grows like
 $Q/\log Q$ up to constants, and measured counts up to $Q = 1500$ grow
 near-linearly as predicted; but no proof technique for the infinitude of
 such pairs is currently visible.
+
+\subsection{Pentads without a class number}
+
+Theorem~\ref{thm:main} reaches the pentad through the center, and therefore
+pays for it with Hypothesis~\ref{hyp:cfs}. The shape theorem offers a second,
+logically independent route to the same $k = 4$, at the price of a second
+divisibility instead of a class number. It is the $(j, e) = (1, 1)$ case,
+which we record explicitly since it is the cheapest unrecorded corollary of
+Theorem~\ref{thm:shape}.
+
+\begin{corollary}[Mixed reduction]\label{cor:mixed}
+Suppose there are infinitely many pairs $(q, t)$ with $q \equiv 1 \pmod 6$,
+$q \ge 7$, with $t$ even, $t \ge 4$, and
+$\gcd(q! - 1,\ t! - 1) > 1$. Then infinitely many primes admit pentads at
+value $1$; that is, Erd\H{o}s \#1056 holds for $k = 4$ with infinitely many
+prime witnesses. No class number condition and no congruence on $p$ is
+required.
+\end{corollary}
+
+\begin{proof}
+Let $(q, t)$ be such a pair and $p$ a prime factor of the gcd. By
+Theorem~\ref{thm:shape} with $(j, e) = (1, 1)$, $p$ exceeds both seeds and
+carries the pentad $\{1,\ q,\ t,\ p-1-q,\ p-2\}$ (sorted), all of whose
+factorials are $\equiv 1 \pmod p$. For the infinitude: for a fixed bound $M$
+there are fewer than $M^2$ pairs with $\max(q, t) \le M$, so $\max(q, t)$ is
+unbounded along the family, and each pair's prime exceeds its seeds; the set
+of primes produced is therefore unbounded, hence infinite.
+\end{proof}
+
+Two remarks. First, Corollary~\ref{cor:mixed} removes the single point of
+failure in the conditional half of Theorem~\ref{thm:main}: pentad infinitude
+no longer rests solely on Hypothesis~\ref{hyp:cfs}, which
+Section~\ref{sec:limits} shows admits no congruence handle. Second, the
+mixed hypothesis is empirically the most abundant of the family. Among the
+$2262$ primes $p < 20000$, exactly $121$ carry a usable mixed pair --- an
+odd seed $\equiv 1 \pmod 6$ together with an even seed $\ge 4$ --- against
+only $30$ carrying two odd seeds $\equiv 1 \pmod 6$, the configuration
+required by Corollary~\ref{cor:hexad}. The smallest witness is $p = 149$
+with $q = 25$ and $t = 98$, giving the pentad
+$\{1,\ 25,\ 98,\ 123,\ 147\}$; note $149 \equiv 1 \pmod 4$, so no central
+factorial and no class number enters. This does not make the hypothesis
+provable --- the obstructions of Section~\ref{sec:limits} apply to it in
+the same way --- but among equally unproven hypotheses it is the one with
+the widest numerical support.
 
 \section{Limits of the identity method}\label{sec:limits}
 
@@ -850,17 +907,60 @@ hold.
     many primes each (Theorem~\ref{thm:patterns}), and unbounded second
     seeds re-pose the problem itself (Proposition~\ref{prop:bootstrap}).
 \end{enumerate}
-Hence pentad or hexad infinitude via identities is \emph{equivalent} to the
-class number statement (Hypothesis~\ref{hyp:cfs}) or to the multi-seed
-divisibility statement (hypothesis of Corollary~\ref{cor:hexad}),
-respectively. This explains precisely why the June 2026 state of the art
-($k = 3$) is the natural ceiling of the entire classical toolkit.
+Hence, \emph{at the pinned value $1$}, pentad or hexad infinitude via
+identities is \emph{equivalent} to the class number statement
+(Hypothesis~\ref{hyp:cfs}) or to a second seed divisibility (hypothesis of
+Corollary~\ref{cor:mixed} or~\ref{cor:hexad}), respectively. This explains
+precisely why the June 2026 state of the art ($k = 3$) is the natural
+ceiling of the classical toolkit \emph{as applied at a pinned value}.
 \end{theorem}
 
 We regard Theorem~\ref{thm:limitative} as the real content of this note
 alongside Theorem~\ref{thm:main}: not a proof that $k \ge 4$ infinitude is
 false --- we believe the opposite --- but an identification of the exact
 open statements any identity-based proof must pass through.
+
+\begin{remark}[The scope of the framework: free common values]
+\label{rem:freevalue}
+The restriction to $S_1(p)$ in the definition of the identity method is
+essential and not cosmetic, and we emphasize it because Erd\H{o}s \#1056
+does \emph{not} pin the common value: it asks only for consecutive intervals
+of product $\equiv 1$, which is the statement that $k+1$ points share
+\emph{some} common factorial residue. The near-center identities displayed
+in the proof of Proposition~\ref{prop:rigidity} are themselves
+value-agnostic. Reading them without imposing $(m \pm t)! \equiv 1$, one
+gets at once, for \emph{even} $t$ with $1 \le t \le m-1$,
+\[
+  (2t-1)!! \equiv 2^t \pmod p
+  \quad\Longrightarrow\quad
+  (m-t)! \equiv m! \equiv (m+t)! \pmod p,
+\]
+since the two displayed ratios become $1$ and $(-1)^t = 1$ respectively.
+This costs no congruence on $p$ and no class number: the shared residue is
+whatever $m!$ happens to be. Over the primes $p < 20000$ and even
+$t \le 400$ there are $142$ such $(p, t)$, all confirmed by direct
+computation, and in $46$ of them the shared value is neither $+1$ nor $-1$
+--- configurations lying entirely outside $S_1(p) \cup S_{-1}(p)$.
+
+The consequence for the present section is a limitation of scope rather than
+an error: Theorem~\ref{thm:limitative} bounds what the identity method
+achieves \emph{at a pinned value}, and says nothing about free-value
+configurations. These can be large. At $p = 977$ we find
+\[
+  102!\ \equiv\ 330!\ \equiv\ 483!\ \equiv\ 488!\ \equiv\ 646!\ \equiv\
+  874!\ \equiv\ 725 \pmod{977},
+\]
+a hexad ($k = 5$) at a prime $\equiv 1 \pmod 4$, at a common value that is
+neither $\pm 1$. Here $488 = m$, the pairs $(330, 646)$ and $(102, 874)$ are
+$m \mp t$ for $t = 158$ and $t = 386$ --- both instances of the implication
+above --- while $483 = m - 5$ is an additional coincidence with no mechanism
+we can attach to it. Such configurations are the norm rather than the
+exception: of the $2259$ primes in $[7, 20000)$, exactly $2207$ --- some
+$97.7\%$ --- carry $k \ge 4$ at some common value, while only $344$
+($15.2\%$) carry $k \ge 4$ at the value $1$. The wall at $k = 3$ is thus a
+wall of \emph{provability}, not of scarcity, and the free-value regime is
+where we would now look for a way around it.
+\end{remark}
 
 \section{Numerical evidence}\label{sec:numerics}
 
