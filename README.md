@@ -1,8 +1,8 @@
 # A class number criterion for pentads of congruent factorials
 
 Progress on [Erdős problem #1056](https://www.erdosproblems.com/1056)
-(Guy, *Unsolved Problems in Number Theory*, A15): for how many consecutive
-integer intervals can all products be ≡ 1 (mod p)?
+(Guy, *Unsolved Problems in Number Theory*, A15): how many consecutive
+integer intervals can each have product ≡ 1 (mod p)?
 
 **The problem remains open.** This repository contains a new partial result,
 its paper, a Lean 4 formalization of the elementary core, and independent
@@ -19,12 +19,15 @@ class number of ℚ(√−p) satisfies h(−p) ≡ 3 (mod 4)**.
 
 Flagship instance: p = 5039 = 7!−1, whose complete solution set of
 n! ≡ 1 (mod 5039) is exactly the pentad {1, 7, 2519, 5031, 5037}, with
-h(−5039) = 83.
+h(−5039) = 83 ≡ 3 (mod 4), as the criterion demands.
 
 The paper also proves a multi-seed shape theorem (reducing hexad infinitude
-to gcd(q₁!−1, q₂!−1) > 1 infinitely often), a conditional infinitude theorem
-for pentad primes, and a limitative theorem explaining why the classical
-identity toolkit terminates unconditionally at tetrads.
+to gcd(q₁!−1, q₂!−1) > 1 infinitely often), two conditional infinitude
+theorems for pentad primes (one via the class number, one class-number-free),
+and a limitative theorem explaining why the classical identity toolkit
+terminates unconditionally at tetrads **at the pinned value 1**. A closing
+remark exhibits the free-value escape: a k = 5 configuration at p = 977 at
+common value 725, outside the theorem's scope by design.
 
 ## Contents
 
@@ -64,7 +67,7 @@ The mathematics was found and verified with substantial AI assistance
 agents, independent recomputation, and machine formalization, coordinated
 and reviewed by the author. Every computational claim in the paper was
 replicated at least twice in independently written code; the referee pass
-re-derived every proof by hand and authenticated every reference. The tetrad
+independently re-derived every proof and authenticated every reference. The tetrad
 construction and its Lean development are entirely due to Agustín-Aquino &
 Hernández Santiago ([tetrads](https://github.com/octavioalberto/tetrads));
 Mordell's theorem is classical. Errors, if any remain, are the author's.
