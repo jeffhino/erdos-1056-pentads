@@ -1,0 +1,406 @@
+\documentclass[11pt]{article}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage[hidelinks]{hyperref}
+\usepackage{booktabs}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{conjecture}[theorem]{Conjecture}
+
+\theoremstyle{definition}
+\newtheorem{question}[theorem]{Question}
+
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\F}{\mathbb{F}}
+
+\title{Erd\H{o}s problem \#1056 as a moment problem\\ for factorials modulo $p$}
+\author{Jeff Hinojosa}
+\date{July 25, 2026}
+
+\begin{document}
+
+\maketitle
+
+{\let\thefootnote\relax\footnotetext{With machine-assisted proof search and
+verification. All computations reported here, and substantial portions of the
+proof search and adversarial checking, were carried out by AI agents (Claude,
+Anthropic) under the author's direction. Companion to \cite{Hino}, whose
+Remark~6.1-style provenance disclosure applies here as well.}}
+
+\begin{abstract}
+Erd\H{o}s problem \#1056 asks, for each $k \ge 2$, for a prime $p$ and $k$
+consecutive integer intervals each of product $\equiv 1 \pmod p$ ---
+equivalently, for $k+1$ residues in $[1, p-1]$ sharing a common factorial
+value modulo $p$. All known unconditional \emph{infinitude} results operate
+at the pinned common values $\pm 1$, where Wilson-type identities apply,
+and \cite{Hino} proves that toolkit terminates at $k = 3$. This note records an elementary
+but consequential translation: for every $k$ there is an explicit $r = r(k)$
+such that a lower bound on the $r$-th moment of the multiplicity function of
+$n! \bmod p$, held on an infinite set of primes, implies \#1056 at $k$ with
+infinitely many prime witnesses --- at a \emph{free} common value, entirely
+outside the scope of the pinned-value obstruction. Under the standard
+Poisson heuristic for factorials modulo $p$ the hypothesis holds for every
+$k$ with an explicit margin. The first case not already known
+unconditionally is $r(4) = 12$: a lower bound
+$V_{12}(p) > 4^{11}(p-1)$ on infinitely many primes implies the infinitude
+of pentad primes. We state the calibration table, the supporting census
+($97.7\%$ of the primes $7 \le p < 20000$ carry $k \ge 4$ at some value;
+only $15.2\%$ at value $1$), and the governing conjecture, and we pose the
+minimal open analytic targets.
+\end{abstract}
+
+\section{The bridge}
+
+Fix an odd prime $p$. For $c \in \F_p^\times$ let
+\[
+  \mu_p(c) \;=\; \#\{\, n \in [1, p-1] : n! \equiv c \pmod p \,\}
+\]
+be the multiplicity function of the factorial map, and for $r \ge 1$ let
+\[
+  V_r(p) \;=\; \sum_{c \in \F_p^\times} \mu_p(c)^r
+  \;=\; \#\{\, (n_1, \dots, n_r) \in [1, p-1]^r :
+    n_1! \equiv \dots \equiv n_r! \pmod p \,\}
+\]
+be its $r$-th moment. Since $n! \not\equiv 0$ for $n \le p-1$, we have
+$\sum_c \mu_p(c) = p - 1$ exactly. Throughout, intervals are
+$I_i = (q_{i-1}, q_i]$ with $1 \le q_0 < q_1 < \dots < q_k \le p-1$: this
+is the equal-factorials form of Noll and Simmons (see \cite{EP} and
+Guy \cite{Gu04}, A15), the convention recorded by OEIS A060427, and it
+excludes the degenerate leading block that $0! = 1$ would otherwise
+supply. Write $k(p)$ for the largest such $k$; then
+$k(p) + 1 = \max_c \mu_p(c)$, as is immediate: the interval
+$(q_i, q_{i+1}]$ has unit product if and only if
+$q_i! \equiv q_{i+1}! \pmod p$.
+
+\begin{lemma}[Moment bridge]\label{lem:bridge}
+Let $k \ge 1$ and $r \ge 2$. If $V_r(p) > k^{r-1}(p-1)$, then
+$k(p) \ge k$. Consequently, if $V_r(p) > k^{r-1}(p-1)$ for infinitely many
+primes $p$, then Erd\H{o}s \#1056 holds at $k$ with infinitely many prime
+witnesses.
+\end{lemma}
+
+\begin{proof}
+Suppose $\max_c \mu_p(c) \le k$. Then
+$\mu_p(c)^r \le k^{r-1}\mu_p(c)$ for every $c$, so
+$V_r(p) \le k^{r-1} \sum_c \mu_p(c) = k^{r-1}(p-1)$. The contrapositive
+gives some $c$ with $\mu_p(c) \ge k+1$: that is $k+1$ distinct elements of
+$[1,p-1]$ with a common factorial value, hence $k$ consecutive intervals of
+unit product. The bound is uniform in $p$, so infinitely many qualifying
+$p$ give infinitely many witnesses.
+\end{proof}
+
+The lemma is pigeonhole and makes no claim to depth. Its content is the
+\emph{translation}: it converts \#1056 from ``produce a rare arithmetic
+configuration'' into ``beat an explicit constant in an averaged count'',
+restating the problem in the language of moments and multiplicative
+energy, where analytic technology operates. Two features deserve emphasis.
+
+First, the common value $c$ produced by the lemma is \emph{free}. The
+limitative theorem of \cite{Hino} shows that the classical identity toolkit
+cannot pass $k = 3$ \emph{at the pinned value $1$}; the configurations
+supplied by Lemma~\ref{lem:bridge} carry no value constraint and are
+untouched by that obstruction. The census below shows free values are where
+almost all large-multiplicity configurations actually live.
+
+Second, the bound in the lemma is tight (all mass at multiplicity exactly
+$k$ attains it), so the exponent $r$ must be chosen large enough that the
+\emph{expected} moment clears the threshold. That calibration is the next
+section.
+
+\section{Calibration under the Poisson model}
+
+The standard heuristic --- conjectured explicitly by Cobeli and Zaharescu
+\cite{CZ}, generalizing Stauduhar, with the random-model analogue proved
+by Cobeli, V\^aj\^aitu, and Zaharescu \cite{CVZ}, and consistent with all
+computations we are aware of, including the census below --- is that for
+large $p$ the multiset $\{ n! \bmod p : 1 \le n \le p-1 \}$ behaves like
+$p-1$ values drawn uniformly at random from $\F_p^\times$, so that the
+multiplicities $\mu_p(c)$ behave like independent Poisson random
+variables of mean $1$.
+The $r$-th moment of a Poisson(1) variable is the $r$-th Bell number $B_r$
+(Dobi\'nski's formula), so the model predicts
+\[
+  V_r(p) \;\sim\; B_r \,(p-1).
+\]
+Define
+\[
+  r(k) \;=\; \min\{\, r : B_r > k^{r-1} \,\},
+\]
+which exists for every $k$ since $B_r$ grows super-exponentially in $r$.
+Under the model, the hypothesis of Lemma~\ref{lem:bridge} at $r = r(k)$
+holds for all large $p$ with margin $B_{r(k)}/k^{r(k)-1}$:
+
+\begin{center}
+\begin{tabular}{rrl}
+\toprule
+$k$ & $r(k)$ & margin $B_{r(k)}/k^{r(k)-1}$ \\
+\midrule
+ 2 &  3 & $1.250$ \\
+ 3 &  7 & $1.203$ \\
+ 4 & 12 & $1.005$ \\
+ 5 & 19 & $1.529$ \\
+ 6 & 26 & $1.746$ \\
+ 7 & 33 & $1.476$ \\
+ 8 & 41 & $1.769$ \\
+ 9 & 49 & $1.686$ \\
+10 & 57 & $1.295$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+(Continuing: $r(11), \dots, r(15) = 66, 75, 84, 93, 103$.) All values were
+computed exactly from the Bell triangle. Note the conspicuously thin margin
+at $k = 4$: the pentad rung $r = 12$ clears its threshold by only $0.5\%$,
+with $B_{12} = 4{,}213{,}597$ against $4^{11} = 4{,}194{,}304$. Any proof
+attempt at $k = 4$ via $r = 12$ has essentially no room; the first
+comfortable rung at $k = 4$ is $r = 13$
+($B_{13}/4^{12} = 1.648$), at the price of a higher moment.
+
+\section{What is known unconditionally}
+
+The ladder below Lemma~\ref{lem:bridge} is remarkably short, which
+calibrates how early the unconditional theory of $n! \bmod p$ still is.
+
+\begin{itemize}
+  \item \textbf{$k(p) \ge 1$ for all $p \ge 5$} is classical: Wilson's
+    theorem gives $(p-2)! \equiv 1 \equiv 1!$, the universal pair.
+  \item \textbf{Non-injectivity on $[2, p-1]$} --- the collision question
+    with the universal pair excluded, i.e.\ the nonexistence of
+    ``socialist primes'' $p > 5$. Rokowska and Schinzel \cite{RS} proved
+    restrictive congruence conditions in 1960; nonexistence was verified
+    computationally to $10^9$ by Trudgian \cite{Tr} (who coined the term)
+    and to $10^{11}$ by Andreji\'c and Tatarevi\'c \cite{AT}. A proof for
+    all $p > 5$ has recently been announced by Abramov \cite{Ab26}; the
+    preprint is elementary and, to our knowledge, not yet independently
+    verified.
+  \item \textbf{$k(p) \ge 2$ for all large $p$ is open}, to our knowledge.
+    Empirically the exceptional set is tiny and appears complete very
+    early: the only odd primes $p < 20000$ with $k(p) \le 1$ are
+    \[
+      p \in \{3,\ 5,\ 7,\ 13,\ 19,\ 37\},
+    \]
+    so $k(p) \ge 2$ for every prime $41 \le p < 20000$. We know of no
+    proof of $k(p) \ge 2$ valid for all large $p$.
+  \item \textbf{Existence for $2 \le k \le 14$}: OEIS A060427 \cite{OEIS};
+    the record witness is $a(14) = 10428007$ (each record witnesses all
+    smaller $k$). An exhaustive scan by the author shows
+    $a(15) > 3.2 \times 10^7$.
+  \item \textbf{Infinitude for $k \le 3$}: the tetrad theorem of
+    Agust\'in-Aquino and Hern\'andez Santiago \cite{AAHS}, at the pinned
+    value $1$; \cite{Hino} adds the pentad criterion (along the family
+    $p \equiv 3 \bmod 4$, $p \mid q! - 1$, $q \equiv 1 \bmod 6$, the
+    central residue $m = (p-1)/2$ joins the tetrad
+    $\{1, q, p-1-q, p-2\}$ if and only if $h(-p) \equiv 3 \bmod 4$) and
+    proves the pinned-value toolkit terminates there.
+  \item \textbf{Distributional results}: Klurman and Munsch \cite{KM}
+    study the image of $n! \bmod p$ in short intervals, and the number of
+    residue classes it misses on average over $p$, in the direction of
+    the random model. Missing-value results already give second-moment
+    excess: by the identity $\sum_c (\mu_p(c) - 1)^+ = \#\{\text{missed
+    classes}\}$, the unconditional lower bound of Banks, Luca,
+    Shparlinski, and Stichtenoth \cite{BLSS} on missed classes yields
+    $V_2(p) \ge (p-1) + \Omega(\log\log p / \log\log\log p)$ on an
+    infinite set of primes, and \cite{KM} improves the missed-class count
+    on average (and under GRH). In the opposite direction, character-sum
+    technology (Garaev--Luca--Shparlinski \cite{GLS} and its successors)
+    gives \emph{upper}-bound-flavored control on congruences with $n!$.
+    All known moment excesses are $o(p)$: no bound
+    $V_r(p) \ge c_r (p-1)$ with a constant $c_r > 1$ appears to be known
+    for any $r \ge 2$.
+\end{itemize}
+
+\section{The census, and where the truth lives}
+
+Direct computation over the $2259$ primes $7 \le p < 20000$
+(\cite{Hino}, Remark on free common values, and the verification code in
+the repository):
+
+\begin{itemize}
+  \item $2207$ primes ($97.7\%$) satisfy $k(p) \ge 4$ at \emph{some}
+    common value;
+  \item only $344$ ($15.2\%$) do so at the value $1$, the only regime
+    where any current technique operates;
+  \item the maximum multiplicity grows steadily: e.g.\ $p = 977$ carries
+    six equal factorials at the value $725$ ($k = 5$, $p \equiv 1 \bmod
+    4$, no class number involved).
+\end{itemize}
+
+The wall at $k = 3$ is thus a wall of \emph{provability}, not of scarcity.
+The Poisson model predicts far more: the maximum of $\sim p$ independent
+Poisson(1) multiplicities is the classical maximum-load statistic,
+\[
+  \max_c \mu_p(c) \;\sim\; \frac{\log p}{\log \log p},
+\]
+which motivates:
+
+\begin{conjecture}\label{conj:aa}
+$k(p) \to \infty$ as $p \to \infty$. Quantitatively,
+$k(p) = (1+o(1)) \log p / \log\log p$ for almost all $p$.
+\end{conjecture}
+
+Conjecture~\ref{conj:aa} implies the full Erd\H{o}s \#1056 (every $k$ is
+witnessed, indeed by all sufficiently large primes outside a density-zero
+set). Erd\H{o}s already suggested that witnesses exist for every $k$
+\cite{Gu04}; the conjecture upgrades this to almost-all $p$ with the
+Poisson maximum-load rate, completing to all multiplicities the random
+model for factorials discussed in \cite{KM} and \cite{CZ}.
+
+\section{The open targets}
+
+We close with the precise statements the translation makes available, in
+increasing order of consequence.
+
+\begin{question}\label{q:base}
+Is $k(p) \ge 2$ for all sufficiently large $p$? Equivalently: does every
+large prime admit three equal factorial residues? It holds for infinitely
+many $p$ \cite{AAHS}, and unconditionally for every $p \equiv 3 \bmod 4$
+with $h(-p) \equiv 3 \bmod 4$, where Mordell's identity puts
+$\{1, (p-1)/2, p-2\}$ at value $1$ \cite{Hino}; the open content is the
+all-but-finitely-many form. (The moment version: $V_3(p) > 4(p-1)$ would
+suffice for the primes on which it holds; the model predicts
+$V_3(p) \sim 5(p-1)$.)
+\end{question}
+
+\begin{question}\label{q:pentads}
+Is $V_{12}(p) > 4^{11}(p-1)$ for infinitely many $p$? By
+Lemma~\ref{lem:bridge} this implies infinitely many pentad primes --- at a
+free common value, bypassing both the class number hypothesis and the
+simultaneous-divisibility hypotheses of \cite{Hino}. The same conclusion
+follows from $V_{13}(p) > 4^{12}(p-1)$, where the model's margin is
+$1.648$ rather than $1.005$.
+\end{question}
+
+\begin{question}\label{q:energy}
+Is there \emph{any} $r \ge 2$ and any constant $c_r > 1$ with
+$V_r(p) \ge c_r\,(p-1)$ for infinitely many $p$? The known excesses are
+additive and small: $(2^r - 2)$ from the universal pair ($p \ge 5$), and
+$\Omega(\log\log p/\log\log\log p)$ at $r = 2$ from the missed-class
+bound of \cite{BLSS} via $\sum_c (\mu_p(c)-1)^+ = \#\{\text{missed
+classes}\}$. All of these are $o(p)$; no constant-factor bound is known
+for any $r$, while the model predicts the constant $B_r$. Any such bound
+would be the first, and the method would matter more than the constant.
+\end{question}
+
+\begin{remark}[Connection to the image size]
+Write $N(p) = \#\{ n! \bmod p : 1 \le n \le p-1 \}$ for the image size ---
+the central quantity of \cite{KM}, long conjectured (Erd\H{o}s--Graham;
+see Guy \cite{Gu04} and the discussion in \cite{KM}) to satisfy
+$N(p) \sim (1 - e^{-1})\,p$. By Cauchy--Schwarz,
+$V_2(p) \ge (p-1)^2 / N(p)$, so any unconditional upper bound
+$N(p) \le (1-\delta)(p-1)$ would resolve Question~\ref{q:energy} at
+$r = 2$ with $c_2 = 1/(1-\delta)$ --- though not conversely: a single
+value of multiplicity $\sim \sqrt{cp}$ makes $V_2$ large while leaving
+$N(p) = (1-o(1))(p-1)$. The missing lower bounds on moments are thus
+implied by, and at most as hard as, the missing upper bounds on the
+image --- a second reason the moment formulation sits squarely in the
+territory of \cite{KM}.
+\end{remark}
+
+We make no claim that these are easy: lower bounds on the multiplicative
+energy of $\{n!\}$ modulo $p$ are exactly what current exponential-sum
+technology does not provide, and the limitative theorem of \cite{Hino}
+explains why the algebraic-identity route cannot substitute for them
+beyond $k=3$. The point of this note is narrower: Erd\H{o}s \#1056 is,
+after Lemma~\ref{lem:bridge}, a well-posed moment problem with an explicit
+finite target for each $k$, a calibrated random model that clears every
+target with stated margin, and a first collision statement beyond Wilson
+recently claimed by Abramov \cite{Ab26}. It is now a problem stated
+entirely in the vocabulary of \cite{KM} and its antecedents.
+
+\begin{remark}[Verification status]
+The Bell numbers, the $r(k)$ table, the census figures, the exceptional
+set $\{3,5,7,13,19,37\}$, and the $a(15)$ bound were each computed at
+least twice in independently written code. Lemma~\ref{lem:bridge} is
+elementary; no computer verification is claimed or needed for it.
+\end{remark}
+
+\begin{thebibliography}{9}
+
+\bibitem{Ab26}
+V.~M.~Abramov,
+\emph{Solution to the Erd\H{o}s problem on distinct residues of
+factorials},
+arXiv:2604.26429 (2026). Preprint.
+
+\bibitem{AT}
+V.~Andreji\'c and M.~Tatarevi\'c,
+\emph{On distinct residues of factorials},
+Publ. Inst. Math. (Beograd) (N.S.) \textbf{100} (2016), 101--106.
+arXiv:1603.04086.
+
+\bibitem{BLSS}
+W.~D.~Banks, F.~Luca, I.~E.~Shparlinski, and H.~Stichtenoth,
+\emph{On the value set of $n!$ modulo a prime},
+Turkish J. Math. \textbf{29} (2005), 169--174.
+
+\bibitem{CVZ}
+C.~Cobeli, M.~V\^aj\^aitu, and A.~Zaharescu,
+\emph{The sequence $n!$ modulo $p$},
+J. Ramanujan Math. Soc. \textbf{15} (2000), 135--154.
+
+\bibitem{CZ}
+C.~Cobeli and A.~Zaharescu,
+\emph{Factorials modulo $p$ and the average of modular mappings},
+arXiv:2011.07582 (2020).
+
+\bibitem{AAHS}
+O.~A.~Agust\'in-Aquino and J.~Hern\'andez Santiago,
+\emph{Infinite tetrads of congruent factorials} (Lean-verified development
+proving the infinitude of tetrad primes),
+2026. Repository: \url{https://github.com/octavioalberto/tetrads}.
+
+\bibitem{EP}
+T.~F.~Bloom,
+\emph{Erd\H{o}s Problem \#1056},
+\url{https://www.erdosproblems.com/1056}, accessed 2026-07-25.
+
+\bibitem{GLS}
+M.~Z.~Garaev, F.~Luca, and I.~E.~Shparlinski,
+\emph{Character sums and congruences with $n!$},
+Trans. Amer. Math. Soc. \textbf{356} (2004), 5089--5102.
+
+\bibitem{Gu04}
+R.~K.~Guy,
+\emph{Unsolved Problems in Number Theory},
+3rd ed., Problems A15 and F11, Springer-Verlag, New York, 2004.
+
+\bibitem{Hino}
+J.~Hinojosa,
+\emph{A class number criterion for pentads of congruent factorials},
+2026. Repository:
+\url{https://github.com/jeffhino/erdos-1056-pentads}.
+
+\bibitem{KM}
+O.~Klurman and M.~Munsch,
+\emph{Distribution of factorials modulo $p$},
+J. Th\'eor. Nombres Bordeaux \textbf{29} (2017), 169--177.
+arXiv:1505.01198.
+
+\bibitem{OEIS}
+OEIS Foundation Inc.,
+\emph{Sequence A060427},
+The On-Line Encyclopedia of Integer Sequences,
+\url{https://oeis.org/A060427}.
+
+\bibitem{RS}
+B.~Rokowska and A.~Schinzel,
+\emph{Sur un probl\`eme de M. Erd\H{o}s},
+Elem. Math. \textbf{15} (1960), 84--85.
+
+\bibitem{Tr}
+T.~Trudgian,
+\emph{There are no socialist primes less than $10^9$},
+Integers \textbf{14} (2014). arXiv:1310.6403.
+
+\end{thebibliography}
+
+\end{document}
